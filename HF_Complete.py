@@ -111,3 +111,5 @@ psi4.set_output_file("output.dat")
 psi4.set_options({"scf_type": "pk"})
 psi4_energy = psi4.energy("SCF/aug-cc-pVDZ", molecule=mol)
 print("Energy matches Psi4 %s" % np.allclose(psi4_energy, E_total))
+
+# I can edit files
