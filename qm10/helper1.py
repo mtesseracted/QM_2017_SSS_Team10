@@ -103,13 +103,25 @@ def a_funct(A):
     return A
 
 
+def diag(F, A):
+    """
+    Returns eigenvalues and eigenvectors of
+    matrix F
+    """
+
+    Fp = A.T @ F @ A
+    eps, Cp = np.linalg.eigh(Fp)
+    C = A @ Cp
+    return eps, C
+
+
 def core_diag(H, A, nel):
     """
     Returns the eigenvalues and eigenvectors of
     the core Hamiltonian
     """
 
-    eps, C = core_diag(H, A)
+    eps, C = diag(H, A)
     Cocc = C[:, :nel]
     D = Cocc @ Cocc.T
     return [eps, C, D] 
