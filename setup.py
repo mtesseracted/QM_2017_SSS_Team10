@@ -7,7 +7,7 @@ in the directory the module directory lives
 
 if __name__ == "__main__":
     setuptools.setup(
-        name='QM_2017_SSS_Team10',
+        name='qm10',
         version="0.1.1",
         description='Functions for RHF calculation',
         author='Aaron Mahler',
