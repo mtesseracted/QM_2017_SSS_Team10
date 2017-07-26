@@ -3,7 +3,7 @@ coverage:
 
   ignore:          # files and folders that will be removed during processing
     - "tests/*"
-    - "qm10/*"
+    - "setup.*"
 
 # comment: false  # to disable comments
 comment:
