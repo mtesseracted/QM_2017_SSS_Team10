@@ -61,11 +61,7 @@ def integrals(basis, geom):
     """
 
     # geom
-    mol = psi4.geometry("""
-    O
-    H 1 1.1
-    H 1 1.1 2 104
-    """)
+    mol = psi4.geometry(geom)
     
     # Build a molecule
     mol.update_geometry()
