@@ -1,10 +1,14 @@
-comment:
-  layout: header, changes, diff
 coverage:
- status:
-    patch: false
+  precision: 4         # how many decimal places to display in the UI: 0 <= value <= 4
 
-ignore:
-  - tests/.*
-  - setup.py
- 
+  ignore:          # files and folders that will be removed during processing
+    - "tests/*"
+    - "qm10/*"
+
+# comment: false  # to disable comments
+comment:
+  layout: "header, diff, changes, sunburst, suggestions, tree"
+  behavior: default        # option: "default" posts once then update, posts new if delete
+                           # option: "once"    post once then updates, if deleted do not post new
+                           # option: "new"     delete old, post new
+                           # option: "spammy"  post new
