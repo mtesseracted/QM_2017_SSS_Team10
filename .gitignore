@@ -106,3 +106,6 @@ ENV/
 
 # coverage file
 .coverage
+
+# ipython notebook file
+*.ipython
