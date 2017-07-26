@@ -7,3 +7,5 @@ def two_elec_energy(params):
     """
     This function takes molecular parameters as
     arguments
+    """
+    pass
