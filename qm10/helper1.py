@@ -1,6 +1,9 @@
 """
 Hartree-Fock functions
 """
+import psi4
+import numpy as np
+
 
 def hartree_fock(basis, geom):
     """
@@ -61,6 +64,8 @@ def a_funct(A):
 
     A.power(-0.5, 1.e-14)
     A = np.array(A)
+    
+    return A
 
 
 def core_diag(H, A, nel):
@@ -69,5 +74,7 @@ def core_diag(H, A, nel):
     the core Hamiltonian
     """
 
-    pass
+    eps, C = core_diag(H, A)
+    Cocc = C[:, :nel]
+    D = Cocc @ Cocc.T
     
