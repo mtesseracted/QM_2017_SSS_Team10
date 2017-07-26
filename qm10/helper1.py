@@ -18,9 +18,9 @@ def hartree_fock(basis, geom, nel):
 
     A = a_funct(A)
     
-    eps, C, D = core_diag(H, A, nel)
+    eps, C = diag(H, A)
 
-    eps, C = fock_diag(A, F)
+    D = density_builder(C, nel)
 
     E_old = 0.0
     F_old = None
@@ -115,13 +115,12 @@ def diag(F, A):
     return eps, C
 
 
-def core_diag(H, A, nel):
+def density_builder(C, nel):
     """
     Returns the eigenvalues and eigenvectors of
     the core Hamiltonian
     """
 
-    eps, C = diag(H, A)
     Cocc = C[:, :nel]
     D = Cocc @ Cocc.T
-    return [eps, C, D] 
+    return D 
