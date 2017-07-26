@@ -29,6 +29,7 @@ install:
 
 before_script:
   - python -V
+  - pip install -e .
 
 script:
   - py.test -v --cov=./
