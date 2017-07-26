@@ -8,11 +8,6 @@ def fock_diag(A, F):
     '''
     pass
 
-def core_Hamil_diag(H, A, nel):
-    '''
-    This fuctions diagonalizes the core Hamiltonian
-    '''
-    pass
 
 def damping_func(iteration, damp_value, F_old, F_new):
     '''
