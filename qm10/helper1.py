@@ -1,6 +1,9 @@
 """
 Hartree-Fock functions
 """
+import psi4
+import numpy as np
+
 
 def hartree_fock(basis, geom):
     """
