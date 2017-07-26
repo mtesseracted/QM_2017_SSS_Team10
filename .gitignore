@@ -103,3 +103,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# coverage file
+.coverage
+
+# ipython notebook file
+*.ipython
