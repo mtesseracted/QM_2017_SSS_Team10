@@ -3,6 +3,7 @@ import psi4
 
 np.set_printoptions(suppress=True, precision=4)
 
+### geom
 mol = psi4.geometry("""
 O
 H 1 1.1
@@ -12,29 +13,37 @@ H 1 1.1 2 104
 # Build a molecule
 mol.update_geometry()
 mol.print_out()
-
+###
+    
 e_conv = 1.e-6
 d_conv = 1.e-6
 nel = 5
 damp_value = 0.20
 damp_start = 5
 
-# Build a basis
+### Build a basis
 bas = psi4.core.BasisSet.build(mol, target="aug-cc-pVDZ")
 bas.print_out()
-
-# Build a MintsHelper
+###
+    
+###Build a MintsHelper
 mints = psi4.core.MintsHelper(bas)
 nbf = mints.nbf()
+###
 
+###check exception ###
 if (nbf > 100):
     raise Exception("More than 100 basis functions!")
+###
 
+### Core Hamiltonian
+    
 V = np.array(mints.ao_potential())
 T = np.array(mints.ao_kinetic())
 
-# Core Hamiltonian
 H = T + V
+####
+
 
 S = np.array(mints.ao_overlap())
 g = np.array(mints.ao_eri())
@@ -49,14 +58,14 @@ A = np.array(A)
 # print(A @ S @ A)
 
 
-# Diagonalize Core H
+### Diagonalize Core H
 def diag(F, A):
     Fp = A.T @ F @ A
     eps, Cp = np.linalg.eigh(Fp)
     C = A @ Cp
     return eps, C
-
-
+####
+    
 eps, C = diag(H, A)
 Cocc = C[:, :nel]
 D = Cocc @ Cocc.T
