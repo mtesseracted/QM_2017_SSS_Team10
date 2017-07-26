@@ -77,4 +77,4 @@ def core_diag(H, A, nel):
     eps, C = core_diag(H, A)
     Cocc = C[:, :nel]
     D = Cocc @ Cocc.T
-    
+    return [eps, C, D] 
