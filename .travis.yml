@@ -32,7 +32,8 @@ before_script:
 
 script:
   - pip install -e .
-  - py.test -v --cov=./ --pep8
+# - py.test -v --cov=./ --pep8
+  - py.test -v --cov=./
 
 after_success:
   - codecov
