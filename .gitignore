@@ -108,4 +108,4 @@ ENV/
 .coverage
 
 # ipython notebook file
-*.ipython
+*.ipynb
