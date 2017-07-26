@@ -11,7 +11,46 @@ def hartree_fock(basis, geom):
     given basis set and geom
     """
 
-    pass
+    V, T, S, g, A = integrals(basis, geom)
+
+    # Core Hamiltonian
+    H = T + V
+
+    A = a_funct(A)
+    
+    eps, C, D = core_diag(H, A, nel)
+
+    eps, C = fock_diag(A, F)
+
+    E_old = 0.0
+    F_old = None
+    for iteration in range(25):
+        # F_pq = H_pq + 2 * g_pqrs D_rs - g_prqs D_rs
+    
+        # g = (7, 7, 7, 7)
+        # D = (1, 1, 7, 7)
+        # Jsum = np.sum(g * D, axis=(2, 3))
+        J = np.einsum("pqrs,rs->pq", g, D)
+        K = np.einsum("prqs,rs->pq", g, D)
+    
+        F_new = H + 2.0 * J - K
+    
+        #### Parameters F_old, F_new, and iteration;
+           # returns F
+        # conditional iteration > start_damp
+        F = damping_function(iteration, damp_value, F_old, F_new)
+        
+        F_old = F_new
+    
+        grad_rms = gradient_calculation(F, D, S)
+    
+        HF_energy = energy_conv(F, H, D, E_old)
+
+        eps, C = diag(F, A)
+        Cocc = C[:, :nel]
+        D = Cocc @ Cocc.T
+
+        return(HF_energy)
   
 
 def integrals(basis, geom):
