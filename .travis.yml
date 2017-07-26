@@ -37,8 +37,4 @@ after_success:
   - codecov
 
 notifications:
-<<<<<<< HEAD
   email: false
-=======
-  email: false
->>>>>>> 05fb40059c61a7d44270c7a45b2dde37d7f6cab6
