@@ -1,13 +1,18 @@
 import setuptools
+"""
+After making modules, to install run:
+    %>pip install -e .
+in the directory the module directory lives
+"""
 
 if __name__ == "__main__":
     setuptools.setup(
-        name='super_duper_funicular',
+        name='QM_2017_SSS_Team10',
         version="0.1.1",
-        description='A starting template for Python programs',
-        author='Oanh Vu',
-        author_email='',
-        url="https://github.com/dgasmith/super_duper_funicular",
+        description='Functions for RHF calculation',
+        author='Aaron Mahler',
+        author_email='alm100@duke.edu',
+        url="https://github.com/MolSSI-SSS/QM_2017_SSS_Team10",
         license='BSD-3C',
         packages=setuptools.find_packages(),
         install_requires=[
