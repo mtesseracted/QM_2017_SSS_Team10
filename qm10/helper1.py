@@ -59,7 +59,8 @@ def a_funct(A):
     power
     """ 
 
-    pass
+    A.power(-0.5, 1.e-14)
+    A = np.array(A)
 
 
 def core_diag(H, A, nel):
