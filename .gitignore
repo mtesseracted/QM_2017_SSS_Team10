@@ -104,4 +104,10 @@ ENV/
 # mypy
 .mypy_cache/
 
+# text files
 *.dat
+# coverage file
+.coverage
+
+# ipython notebook file
+*.ipynb

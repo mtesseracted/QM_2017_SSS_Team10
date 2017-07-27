@@ -4,6 +4,7 @@ coverage:
   ignore:          # files and folders that will be removed during processing
     - "tests/*"
     - "setup.*"
+    - "HF_complete.py"
 
 # comment: false  # to disable comments
 comment:

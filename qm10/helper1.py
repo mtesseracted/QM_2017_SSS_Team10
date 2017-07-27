@@ -1,29 +1,78 @@
 """
 Hartree-Fock functions
 """
+import psi4
+import numpy as np
 
-def hartree_fock(basis, geom):
+
+def hartree_fock(basis, geom, nel):
     """
-    Returns Hartree-Fock energy
-    given basis set and geom
+    Returns:
+    Hartree-Fock energy (float)
+
+    Parameters:
+    basis (multi-line string)
+    geom (string) 
     """
 
-    pass
+    V, T, S, g, A = integrals(basis, geom)
+
+    # Core Hamiltonian
+    H = T + V
+
+    A = a_funct(A)
+    
+    eps, C = diag(H, A)
+
+    D = density_builder(C, nel)
+
+    E_old = 0.0
+    F_old = None
+    for iteration in range(25):
+        # F_pq = H_pq + 2 * g_pqrs D_rs - g_prqs D_rs
+    
+        # g = (7, 7, 7, 7)
+        # D = (1, 1, 7, 7)
+        # Jsum = np.sum(g * D, axis=(2, 3))
+        J = np.einsum("pqrs,rs->pq", g, D)
+        K = np.einsum("prqs,rs->pq", g, D)
+    
+        F_new = H + 2.0 * J - K
+    
+        #### Parameters F_old, F_new, and iteration;
+           # returns F
+        # conditional iteration > start_damp
+        F = damping_function(iteration, damp_value, F_old, F_new)
+        
+        F_old = F_new
+    
+        grad_rms = gradient_calculation(F, D, S)
+    
+        HF_energy = energy_conv(F, H, D, E_old)
+
+        eps, C = diag(F, A)
+        Cocc = C[:, :nel]
+        D = Cocc @ Cocc.T
+
+        return(HF_energy)
   
 
 def integrals(basis, geom):
     """
-    Returns the kinetic, overlap, potential, and electron
-    repulsion integrals of a molecule with basis set basis
-    and geometry geom.
+    Returns:
+    K - kinetic integrals (Numpy array)
+    S - overlap integrals (Numpy array)
+    V - potential energy (Numpy array)
+    A - electron repulsion integrals
+        (Psi4 molecular integral object)
+
+    Parameters:
+    basis (multi-line string)
+    geom (string) 
     """
 
     # geom
-    mol = psi4.geometry("""
-    O
-    H 1 1.1
-    H 1 1.1 2 104
-    """)
+    mol = psi4.geometry(geom)
     
     # Build a molecule
     mol.update_geometry()
@@ -65,13 +114,24 @@ def a_funct(A):
     return A
 
 
-def core_diag(H, A, nel):
+def diag(F, A):
+    """
+    Returns eigenvalues and eigenvectors of
+    matrix F
+    """
+
+    Fp = A.T @ F @ A
+    eps, Cp = np.linalg.eigh(Fp)
+    C = A @ Cp
+    return eps, C
+
+
+def density_builder(C, nel):
     """
     Returns the eigenvalues and eigenvectors of
     the core Hamiltonian
     """
 
-    eps, C = core_diag(H, A)
     Cocc = C[:, :nel]
     D = Cocc @ Cocc.T
-    
+    return D 
