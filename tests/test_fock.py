@@ -2,6 +2,7 @@
 Test for Hartree Fock SCF code
 """
 import qm10
+#from qm10 import fock
 import pytest
 
 

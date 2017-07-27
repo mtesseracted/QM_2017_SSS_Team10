@@ -2,7 +2,7 @@ import numpy as np
 import psi4
 
 
-def update_D(diag, F, A):
+def update_D(diag, F, A, nel):
     '''
     This function updates the density matrix(D) for the next iteration
 
@@ -11,9 +11,11 @@ def update_D(diag, F, A):
     diag      | function       | Diagonalizes the core Hamiltonian
     F         | numpy array    | Fock matrix
     A         | numpy array    | Transformation matrix
+    nel       | integer        | valence electron count
+
+    Returns
     eps       | numpy array    | Eigenvalues of core Hamiltonian
     D         | numpy array    | Density matrix
-    C         | numpy array    | Orthonormal eigenvectors of core Hamiltonian
     '''
     eps, C = diag(F, A)
     Cocc = C[:, :nel]
@@ -32,6 +34,8 @@ def damping_func(iteration, damp_start, F_old, F_new, damp_value):
     damp_value|    float       | weight used in the damp procedure
     F_old     | numpy array    | Fock matrix from previous iteration
     F_new     | numpy array    | Fock matrix from current  iteration
+
+    Returns
     F         | nympy array    | Fock matrix after damp function
     '''
     if iteration >= damp_start:
@@ -51,6 +55,8 @@ def gradient(F, D, S):
     F         | numpy array    | Fock matrix
     D         | numpy array    | Density matrix
     S         | numpy array    | Overlap matrix
+
+    Returns
     grad      | numpy array    | Gradient
     grad_rms  | numpy.float64  | root mean square of the gradient
    '''
