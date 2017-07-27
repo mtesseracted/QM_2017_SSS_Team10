@@ -1,3 +1,5 @@
+from qm10 import helper2
+
 """
 Hartree-Fock functions
 """
@@ -7,8 +9,12 @@ import numpy as np
 
 def hartree_fock(basis, geom, nel):
     """
-    Returns Hartree-Fock energy
-    given basis set and geom
+    Returns:
+    Hartree-Fock energy (float)
+
+    Parameters:
+    basis (multi-line string)
+    geom (string) 
     """
 
     V, T, S, g, A = integrals(basis, geom)
@@ -18,9 +24,9 @@ def hartree_fock(basis, geom, nel):
 
     A = a_funct(A)
     
-    eps, C, D = core_diag(H, A, nel)
+    eps, C = diag(H, A)
 
-    eps, C = fock_diag(A, F)
+    D = density_builder(C, nel)
 
     E_old = 0.0
     F_old = None
@@ -38,13 +44,13 @@ def hartree_fock(basis, geom, nel):
         #### Parameters F_old, F_new, and iteration;
            # returns F
         # conditional iteration > start_damp
-        F = damping_function(iteration, damp_value, F_old, F_new)
+        F = helper2.damping_function(iteration, damp_value, F_old, F_new)
         
         F_old = F_new
     
-        grad_rms = gradient_calculation(F, D, S)
+        grad_rms = helper2.gradient_calculation(F, D, S)
     
-        HF_energy = energy_conv(F, H, D, E_old)
+        HF_energy = helper2.energy_conv(F, H, D, E_old)
 
         eps, C = diag(F, A)
         Cocc = C[:, :nel]
@@ -55,9 +61,16 @@ def hartree_fock(basis, geom, nel):
 
 def integrals(basis, geom):
     """
-    Returns the kinetic, overlap, potential, and electron
-    repulsion integrals of a molecule with basis set basis
-    and geometry geom.
+    Returns:
+    K - kinetic integrals (Numpy array)
+    S - overlap integrals (Numpy array)
+    V - potential energy (Numpy array)
+    A - electron repulsion integrals
+        (Psi4 molecular integral object)
+
+    Parameters:
+    basis (multi-line string)
+    geom (string) 
     """
 
     # geom
@@ -115,13 +128,12 @@ def diag(F, A):
     return eps, C
 
 
-def core_diag(H, A, nel):
+def density_builder(C, nel):
     """
     Returns the eigenvalues and eigenvectors of
     the core Hamiltonian
     """
 
-    eps, C = diag(H, A)
     Cocc = C[:, :nel]
     D = Cocc @ Cocc.T
-    return [eps, C, D] 
+    return D 

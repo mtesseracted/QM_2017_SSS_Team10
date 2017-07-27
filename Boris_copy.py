@@ -8,11 +8,12 @@ np.set_printoptions(suppress=True, precision=4)
 #############################
 
 
-def damping_func(iteration, damp_start, F_old, F_new):
+def damping_func(iteration, damp_start, F_old, F_new, damp_value):
     if iteration >= damp_start:
         F = damp_value * F_old + (1.0 - damp_value) * F_new
     else:
         F = F_new
+    print(type(damp_value), "<-damp_value")
     return F
 
 def gradient(F, D, S):
@@ -26,7 +27,30 @@ def energy_conv(F, H, D, E_old):
 
     E_diff = E_total - E_old
     E_old = E_total
+    print(type(F),"<-F")
+    print(type(H),"<-H")
+    print(type(D),"<-D")
+    print(type(E_old),"<-E_old")
+    print(type(E_diff),"<-E_diff")
     return E_total, E_diff
+
+def update_D(diag, F, A):
+    '''
+    This function updates the density matrix(D) for the next iteration
+    
+    Arguments |  Datatype      | description
+              |                |  
+    diag      | function       | Diagonalizes the core Hamiltonian
+    F         | numpy array    | Fock matrix
+    A         | numpy array    | Transformation matrix
+    eps       | numpy array    | Eigenvalues of core Hamiltonian 
+    D         | numpy array    | Density matrix 
+    C         | numpy array    | Orthonormal eigenvectors of core Hamiltonian
+    '''
+    eps, C = diag(F, A)
+    Cocc = C[:, :nel]
+    D = Cocc @ Cocc.T
+    return D, eps
 
 
 
@@ -113,7 +137,7 @@ for iteration in range(25):
     F_new = H + 2.0 * J - K
 
     # conditional iteration > start_damp
-    F = damping_func(iteration, damp_start, F_old, F_new)
+    F = damping_func(iteration, damp_start, F_old, F_new, damp_value)
     F_old = F_new
     # F = (damp_value) Fold + (??) Fnew
 
@@ -129,9 +153,7 @@ for iteration in range(25):
     if (E_diff < e_conv) and (grad_rms < d_conv):
         break
 
-    eps, C = diag(F, A)
-    Cocc = C[:, :nel]
-    D = Cocc @ Cocc.T
+    D, eps = update_D(diag, F, A)
 
 print("SCF has finished!\n")
 
