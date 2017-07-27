@@ -1,3 +1,5 @@
+from qm10 import helper2
+
 """
 Hartree-Fock functions
 """
@@ -42,13 +44,13 @@ def hartree_fock(basis, geom, nel):
         #### Parameters F_old, F_new, and iteration;
            # returns F
         # conditional iteration > start_damp
-        F = damping_function(iteration, damp_value, F_old, F_new)
+        F = helper2.damping_function(iteration, damp_value, F_old, F_new)
         
         F_old = F_new
     
-        grad_rms = gradient_calculation(F, D, S)
+        grad_rms = helper2.gradient_calculation(F, D, S)
     
-        HF_energy = energy_conv(F, H, D, E_old)
+        HF_energy = helper2.energy_conv(F, H, D, E_old)
 
         eps, C = diag(F, A)
         Cocc = C[:, :nel]
