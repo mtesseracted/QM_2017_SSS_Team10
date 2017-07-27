@@ -1,6 +1,6 @@
 import numpy as np
 import psi4
-
+from  helper1 import diag
 
 def update_D(diag, F, A):
     '''
