@@ -59,18 +59,21 @@ def gradient(F, D, S):
    return grad, grad_rms
 
 
-def energy_conv(F, H, D, E_old):
+def energy_conv(F, H, D, E_old, mol):
    '''
    This function builds the electronic energy from the Fock, density 
    and core hamiltonian matrices
 
-   Arguments |  Datatype      | Description 
-             |                |
-      F      | numpy array    | Fock matrix
-      H      | numpy array    | 
-      D      | numpy array    | Density matrix
-      E_old  | numpy.float64  | Energy from the previous iteration
-      E_diff | numpy.float64  | Energy difference between current and previous iteration   
+   Arguments                 |  Datatype      | Description 
+                             |                |
+      F                      | numpy array    | Fock matrix
+      H                      | numpy array    | 
+      D                      | numpy array    | Density matrix
+      E_old                  | numpy.float64  | Energy from the previous iteration
+      E_diff                 | numpy.float64  | Energy difference between current and previous iteration   
+ mol.nuclear_repulsion_energy| float          | nuclear_repulsion energy(it is extracted from 
+                             |                | the mol <molecule> class)
+     mol                     | class          | It is the class that contains the all the information about the molecule 
    '''
    E_electric = np.sum((F + H) * D)
    E_total = E_electric + mol.nuclear_repulsion_energy()
