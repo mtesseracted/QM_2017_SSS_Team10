@@ -107,7 +107,7 @@ def integrals(basis, mol):
 def a_funct(A):
     """
     Returns matrix raised to the -1/2 power 
-        as a numpy.ndarray
+        as a numpy array
     @A: psi4.core.Matrix
     """ 
 
