@@ -14,7 +14,6 @@ H 1 1.1 2 104
 bas = psi4.core.BasisSet.build(mol, target="aug-cc-pVDZ")
 mints = psi4.core.MintsHelper(bas)
 A = mints.ao_overlap()
-<<<<<<< HEAD
 F = F_old = np.array([5.0,5.0])
 
 def test_update_D():
