@@ -1,6 +1,6 @@
 import numpy as np
 import psi4
-import helper1
+from qm10 import helper1
 
 def update_D(F, A, nel):
     '''
