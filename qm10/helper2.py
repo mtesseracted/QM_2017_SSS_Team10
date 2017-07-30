@@ -1,7 +1,8 @@
 import numpy as np
 import psi4
+from qm10 import helper1
 
-def update_D(diag, F, A, nel):
+def update_D(F, A, nel):
     '''
     This function updates the density matrix(D) for the next iteration
 
@@ -15,8 +16,10 @@ def update_D(diag, F, A, nel):
     Returns
     eps       | numpy array    | Eigenvalues of core Hamiltonian
     D         | numpy array    | Density matrix
+    C         | numpy array    | Orthonormal eigenvectors of core Hamiltonian
+    nel       |    int         | number of paired electrons
     '''
-    eps, C = diag(F, A)
+    eps, C = helper1.diag(F, A)
     Cocc = C[:, :nel]
     D = Cocc @ Cocc.T
     return D, eps
