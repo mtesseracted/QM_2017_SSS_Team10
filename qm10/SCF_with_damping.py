@@ -58,36 +58,38 @@ def diag(F, A):
 
 
 def updateD(H, A, nel):
-    pass
+    eps, C = diag(H, A)
+    Cocc = C[:, :nel]
+    D = Cocc @ Cocc.T
+    return D
 
 def buildF(g, D, H, dampVal, F_old):
-    pass
-
-eps, C = diag(H, A)
-Cocc = C[:, :nel]
-D = Cocc @ Cocc.T
-
-E_old = 0.0
-F_old = None
-for iteration in range(25):
-    # F_pq = H_pq + 2 * g_pqrs D_rs - g_prqs D_rs
-
-    # g = (7, 7, 7, 7)
-    # D = (1, 1, 7, 7)
-    # Jsum = np.sum(g * D, axis=(2, 3))
     J = np.einsum("pqrs,rs->pq", g, D)
     K = np.einsum("prqs,rs->pq", g, D)
 
     F_new = H + 2.0 * J - K
 
     # conditional iteration > start_damp
-    if iteration >= damp_start:
-        F = damp_value * F_old + (1.0 - damp_value) * F_new
-    else:
-        F = F_new
+    F = dampVal * F_old + (1.0 - dampVal) * F_new
 
     F_old = F_new
     # F = (damp_value) Fold + (??) Fnew
+    return F_old, F
+
+D = updateD(H, A, nel)
+
+E_old = 0.0
+F_old = np.zeros((nbf,nbf))
+for iteration in range(25):
+    # F_pq = H_pq + 2 * g_pqrs D_rs - g_prqs D_rs
+
+    # g = (7, 7, 7, 7)
+    # D = (1, 1, 7, 7)
+    # Jsum = np.sum(g * D, axis=(2, 3))
+    if iteration >= damp_start:
+        F_old, F = buildF(g, D, H, damp_value, F_old)
+    else:
+        F_old, F = buildF(g, D, H, 0.0, F_old)
 
     # Build the AO gradient
     grad = F @ D @ S - S @ D @ F
@@ -107,9 +109,7 @@ for iteration in range(25):
     if (E_diff < e_conv) and (grad_rms < d_conv):
         break
 
-    eps, C = diag(F, A)
-    Cocc = C[:, :nel]
-    D = Cocc @ Cocc.T
+    D = updateD(F, A, nel)
 
 print("SCF has finished!\n")
 
