@@ -76,6 +76,23 @@ def buildF(g, D, H, dampVal, F_old):
     # F = (damp_value) Fold + (??) Fnew
     return F_old, F
 
+def buildgrad(F, D, S):
+    grad = F @ D @ S - S @ D @ F
+
+    grad_rms = np.mean(grad ** 2) ** 0.5
+
+    return grad_rms
+
+def buildE(F, H, D, old, nuc):
+    # here, nuc is mol.nuclear_repulsion_energy()
+    elec = np.sum((F + H) * D)
+    total = elec + nuc
+
+    diff = total - old
+
+    return total, diff
+    
+
 D = updateD(H, A, nel)
 
 E_old = 0.0
@@ -92,15 +109,10 @@ for iteration in range(25):
         F_old, F = buildF(g, D, H, 0.0, F_old)
 
     # Build the AO gradient
-    grad = F @ D @ S - S @ D @ F
-
-    grad_rms = np.mean(grad ** 2) ** 0.5
+    grad_rms = buildgrad(F, D, S)
 
     # Build the energy
-    E_electric = np.sum((F + H) * D)
-    E_total = E_electric + mol.nuclear_repulsion_energy()
-
-    E_diff = E_total - E_old
+    E_total, E_diff = buildE(F, H, D, E_old, mol.nuclear_repulsion_energy())
     E_old = E_total
     print("Iter=%3d  E = % 16.12f  E_diff = % 8.4e  D_diff = % 8.4e" %
             (iteration, E_total, E_diff, grad_rms))
