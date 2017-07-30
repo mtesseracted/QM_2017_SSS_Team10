@@ -14,28 +14,49 @@ H 1 1.1 2 104
 bas = psi4.core.BasisSet.build(mol, target="aug-cc-pVDZ")
 mints = psi4.core.MintsHelper(bas)
 A = mints.ao_overlap()
-F = 5.0
+<<<<<<< HEAD
+F = F_old = np.array([5.0,5.0])
 
-def test_fork_diag():
-    qm10.helper2.fock_diag(A, F)
-    assert (True)
-
-F_old = 5.0
-F_new = 6.0
-iteration = 1.0
+def test_update_D():
+    qm10.helper2.update_D()
+F_old = np.array([[5.0,5.0], [5.0, 5.0]])
+F_new = np.array([[6.0,6.0], [6.0, 6.0]])
+damp_start = 5
+iteration = 1
 damp_value = 2.0
+
 def test_damping_func():
-    qm10.helper2.damping_func(iteration, damp_value, F_old, F_new)
+    qm10.helper2.damping_func(iteration, damp_start, F_old,
+    F_new, damp_value)
     assert (True)
 
-D = 10.0
-S = 1.0
-def test_gradient_calculation():
-    qm10.helper2.gradient_calculation(F, D, S)
+D = np.array([[6.0,6.0], [6.0, 6.0]])
+S = np.array([[6.0,6.0], [6.0, 6.0]])
+def test_gradient():
+    qm10.helper2.gradient(F, D, S)
+
+def test_damping_func():
+    qm10.helper2.damping_func(iteration, damp_value, A, A, 0.2)
     assert (True)
 
-H = 0.0
-E_old =2
+def test_gradient():
+    qm10.helper2.gradient(nA, nA, nA)
+    assert (True)
+
+H = np.array([[6.0,6.0], [6.0, 6.0]])
+E_old =np.float64(50)
+mol = psi4.geometry("""
+O
+H 1 1.1
+H 1 1.1 2 104
+""")
 def test_energy_conv():
-    qm10.helper2.energy_conv(F, H, D, E_old)
+    qm10.helper2.energy_conv(F, H, D, E_old, mol)
     assert (True)
+
+
+def test_update_D():
+    qm10.helper2.update_D(qm10.helper1.diag, A, np.array(A), 2)
+    assert (True)
+
+

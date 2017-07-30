@@ -1,8 +1,7 @@
 import numpy as np
 import psi4
 
-
-def update_D(diag, F, A):
+def update_D(diag, F, A, nel):
     '''
     This function updates the density matrix(D) for the next iteration
 
@@ -11,9 +10,11 @@ def update_D(diag, F, A):
     diag      | function       | Diagonalizes the core Hamiltonian
     F         | numpy array    | Fock matrix
     A         | numpy array    | Transformation matrix
+    nel       | integer        | valence electron count
+
+    Returns
     eps       | numpy array    | Eigenvalues of core Hamiltonian
     D         | numpy array    | Density matrix
-    C         | numpy array    | Orthonormal eigenvectors of core Hamiltonian
     '''
     eps, C = diag(F, A)
     Cocc = C[:, :nel]
@@ -32,6 +33,8 @@ def damping_func(iteration, damp_start, F_old, F_new, damp_value):
     damp_value|    float       | weight used in the damp procedure
     F_old     | numpy array    | Fock matrix from previous iteration
     F_new     | numpy array    | Fock matrix from current  iteration
+
+    Returns
     F         | nympy array    | Fock matrix after damp function
     '''
     if iteration >= damp_start:
@@ -51,6 +54,8 @@ def gradient(F, D, S):
     F         | numpy array    | Fock matrix
     D         | numpy array    | Density matrix
     S         | numpy array    | Overlap matrix
+
+    Returns
     grad      | numpy array    | Gradient
     grad_rms  | numpy.float64  | root mean square of the gradient
    '''
@@ -59,18 +64,21 @@ def gradient(F, D, S):
    return grad, grad_rms
 
 
-def energy_conv(F, H, D, E_old):
+def energy_conv(F, H, D, E_old, mol):
    '''
    This function builds the electronic energy from the Fock, density 
    and core hamiltonian matrices
 
-   Arguments |  Datatype      | Description 
-             |                |
-      F      | numpy array    | Fock matrix
-      H      | numpy array    | 
-      D      | numpy array    | Density matrix
-      E_old  | numpy.float64  | Energy from the previous iteration
-      E_diff | numpy.float64  | Energy difference between current and previous iteration   
+   Arguments                 |  Datatype      | Description 
+                             |                |
+      F                      | numpy array    | Fock matrix
+      H                      | numpy array    | 
+      D                      | numpy array    | Density matrix
+      E_old                  | numpy.float64  | Energy from the previous iteration
+      E_diff                 | numpy.float64  | Energy difference between current and previous iteration   
+ mol.nuclear_repulsion_energy| float          | nuclear_repulsion energy(it is extracted from 
+                             |                | the mol <molecule> class)
+     mol                     | class          | It is the class that contains the all the information about the molecule 
    '''
    E_electric = np.sum((F + H) * D)
    E_total = E_electric + mol.nuclear_repulsion_energy()

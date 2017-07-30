@@ -7,7 +7,7 @@ import psi4
 import numpy as np
 
 
-def hartree_fock(basis, geom, nel):
+def hartree_fock(basis, mol, nel):
     """
     Returns:
     Hartree-Fock energy (float)
@@ -17,7 +17,7 @@ def hartree_fock(basis, geom, nel):
     geom (string) 
     """
 
-    V, T, S, g, A = integrals(basis, geom)
+    V, T, S, g, A = integrals(basis, mol)
 
     # Core Hamiltonian
     H = T + V
@@ -44,13 +44,13 @@ def hartree_fock(basis, geom, nel):
         #### Parameters F_old, F_new, and iteration;
            # returns F
         # conditional iteration > start_damp
-        F = helper2.damping_function(iteration, damp_value, F_old, F_new)
+        F = helper2.damping_func(iteration, 5, F_old, F_new, 0.2)
         
         F_old = F_new
     
-        grad_rms = helper2.gradient_calculation(F, D, S)
+        grad_rms = helper2.gradient(F, D, S)
     
-        HF_energy = helper2.energy_conv(F, H, D, E_old)
+        HF_energy = helper2.energy_conv(F, H, D, E_old, mol)
 
         eps, C = diag(F, A)
         Cocc = C[:, :nel]
@@ -59,7 +59,7 @@ def hartree_fock(basis, geom, nel):
         return(HF_energy)
   
 
-def integrals(basis, geom):
+def integrals(basis, mol):
     """
     Returns:
     K - kinetic integrals (Numpy array)
@@ -70,15 +70,15 @@ def integrals(basis, geom):
 
     Parameters:
     basis (multi-line string)
-    geom (string) 
+    mol (psi4.core.Molecule) 
     """
 
     # geom
-    mol = psi4.geometry(geom)
+    #mol = psi4.geometry(geom)
     
     # Build a molecule
-    mol.update_geometry()
-    mol.print_out()
+    #mol.update_geometry()
+    #mol.print_out()
     
     # Build a basis
     bas = psi4.core.BasisSet.build(mol, target="aug-cc-pVDZ")
@@ -106,8 +106,9 @@ def integrals(basis, geom):
 
 def a_funct(A):
     """
-    Returns matrix raised to the -1/2
-    power
+    Returns matrix raised to the -1/2 power 
+        as a numpy.ndarray
+    @A: psi4.core.Matrix
     """ 
 
     A.power(-0.5, 1.e-14)
@@ -118,11 +119,13 @@ def a_funct(A):
 
 def diag(F, A):
     """
-    Returns eigenvalues and eigenvectors of
-    matrix F
+    Returns eigenvalues and eigenvectors of matrix F
+    @F: numpy.ndarray
+    @A: numpy.ndarray
     """
 
     Fp = A.T @ F @ A
+    #Fp = A.triplet(A, F, A, transa=True)
     eps, Cp = np.linalg.eigh(Fp)
     C = A @ Cp
     return eps, C
