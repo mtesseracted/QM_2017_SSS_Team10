@@ -57,6 +57,12 @@ def diag(F, A):
     return eps, C
 
 
+def updateD(H, A, nel):
+    pass
+
+def buildF(g, D, H, dampVal, F_old):
+    pass
+
 eps, C = diag(H, A)
 Cocc = C[:, :nel]
 D = Cocc @ Cocc.T
