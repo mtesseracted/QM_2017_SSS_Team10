@@ -136,16 +136,34 @@ void einJ(py::array_t<double> A,
 //    std::vector<double> C_data(C_nrows*C_ncols);
     
     for(size_t i=0; i< C_nrows; i++){
-    for(size_t j=0; j< C_ncols; j++){
-	
-	double val = 0.0;
-	for(size_t k=0; k<n_k; k++){
+	for(size_t j=0; j< C_ncols; j++){
+
+        size_t outer_index = j + i*C_ncols;
+
+	    double val = 0.0;
+
+	    for(size_t k=0; k<n_k; k++){
         for(size_t l=0; l<n_l; l++){
 	    val += A_data[i*n_321 + j*n_32 + k*n_l + l] * B_data[l*n_l + k];
         }}
 	C_data[i*C_ncols + j] = val;
     }}
 /*
+		    val += A_data[outer_index * (l + k * n_l)] * B_data[l + k * n_l];
+        }
+	    }
+	    C_data[i*C_ncols +j] = val;
+
+//    for(size_t j=0; j< C_ncols; j++){
+	
+//	double val = 0.0;
+//	for(size_t k=0; k<n_k; k++){
+//        for(size_t l=0; l<n_l; l++){
+//	    val += A_data[i*n_321 + j*n_32 + k*n_l + l] * B_data[l*n_l + k];
+//        }}
+//	C_data[i*C_ncols +j] = val;
+//    }}
+
     py::buffer_info Cbuf = 
     {
 	C_data.data(),
