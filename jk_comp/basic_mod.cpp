@@ -101,11 +101,14 @@ py::array_t<double> dgemm_numpy(double alpha,
 
 
 
-py::array_t<double> einJ(py::array_t<double> A,
-                         py::array_t<double> B)
+//py::array_t<double> einJ(py::array_t<double> A,
+void einJ(py::array_t<double> A,
+                         py::array_t<double> B,
+			 py::array_t<double> C)
 {
     py::buffer_info A_info = A.request();
     py::buffer_info B_info = B.request();
+    py::buffer_info C_info = C.request();
 
     if(A_info.ndim != 4)
 	throw std::runtime_error("A is not a 4D tensor");
@@ -127,8 +130,10 @@ py::array_t<double> einJ(py::array_t<double> A,
 
     const double* A_data = static_cast<double *>(A_info.ptr);
     const double* B_data = static_cast<double *>(B_info.ptr);
+    double* C_data = static_cast<double *>(C_info.ptr);
 
-    std::vector<double> C_data(C_nrows*C_ncols);
+
+//    std::vector<double> C_data(C_nrows*C_ncols);
     
     for(size_t i=0; i< C_nrows; i++){
     for(size_t j=0; j< C_ncols; j++){
@@ -138,9 +143,9 @@ py::array_t<double> einJ(py::array_t<double> A,
         for(size_t l=0; l<n_l; l++){
 	    val += A_data[i*n_321 + j*n_32 + k*n_l + l] * B_data[l*n_l + k];
         }}
-	C_data[i*C_ncols +j] = val;
+	C_data[i*C_ncols + j] = val;
     }}
-
+/*
     py::buffer_info Cbuf = 
     {
 	C_data.data(),
@@ -151,7 +156,7 @@ py::array_t<double> einJ(py::array_t<double> A,
 	{ C_ncols*sizeof(double), sizeof(double) }
     };
 
-    return py::array_t<double>(Cbuf);
+    return py::array_t<double>(Cbuf); // */
 }
 
 
@@ -168,6 +173,15 @@ PYBIND11_PLUGIN(basic_mod)
     m.def("dgemm_numpy", &dgemm_numpy, "Calculates matrix product");
     m.def("einJ", &einJ, "Computes Einstein summation necessary to construct Coulomb matrix");
 //    m.def("einK", &einK, "Computes Einstein summation necessary to construct exchange matrix"
+/*
+    m.def("increment_3d", [](py::array_t<double> x) {
+        auto r = x.mutable_unchecked<3>(); // Will throw if ndim != 3 or flags.writeable is false
+        for (size_t i = 0; i < r.shape(0); i++)
+	for (size_t j = 0; j < r.shape(1); j++)
+	    for (size_t k = 0; k < r.shape(2); k++)
+	        r(i, j, k) += 1.0;
+    }, py::arg().noconvert()); // */
+
 
 
     return m.ptr();

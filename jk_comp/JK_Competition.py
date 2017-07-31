@@ -30,7 +30,10 @@ J_ref = np.einsum("pqrs,rs->pq", I, D)
 K_ref = np.einsum("prqs,rs->pq", I, D)
 
 # Your implementation
-J = bm.einJ(I, D)
+np.array(I, copy=False)
+np.array(D, copy=False)
+J = np.empty([I.shape[0], I.shape[1]])
+bm.einJ(I, D, J)
 #J = np.random.rand(nbf, nbf)
 K = np.random.rand(nbf, nbf)
 
