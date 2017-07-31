@@ -1,5 +1,6 @@
-import numpy as np
+import numpy as np 
 import psi4
+import build.basic_mod as bm
 
 # Make sure we get the same random array
 np.random.seed(0)
@@ -25,7 +26,8 @@ D = np.random.rand(nbf, nbf)
 D = (D + D.T) / 2
 
 # Reference
-J_ref = np.einsum("pqrs,rs->pq", I, D)
+#J_ref = np.einsum("pqrs,rs->pq", I, D)
+J_ref = bm.einJ(I, D)
 K_ref = np.einsum("prqs,rs->pq", I, D)
 
 # Your implementation

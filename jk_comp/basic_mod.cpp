@@ -122,6 +122,8 @@ py::array_t<double> einJ(py::array_t<double> A,
     size_t C_ncols = A_info.shape[1];
     size_t n_k = A_info.shape[2]; 
     size_t n_l = A_info.shape[3]; 
+    size_t n_32 = n_l*n_k;
+    size_t n_321 = n_32*C_ncols;
 
     const double* A_data = static_cast<double *>(A_info.ptr);
     const double* B_data = static_cast<double *>(B_info.ptr);
@@ -129,17 +131,28 @@ py::array_t<double> einJ(py::array_t<double> A,
     std::vector<double> C_data(C_nrows*C_ncols);
     
     for(size_t i=0; i< C_nrows; i++){
-	for(size_t j=0; j< C_ncols; j++){
-
-	    double val = 0.0;
-	    for(size_t k=0; k<n_k; k++){
+    for(size_t j=0; j< C_ncols; j++){
+	
+	double val = 0.0;
+	for(size_t k=0; k<n_k; k++){
         for(size_t l=0; l<n_l; l++){
-		    val += A_data[l + k * n_l + j * n_k + i * C_ncols] * B_data[l + k * n_l];
-        }
-	    }
-	    C_data[i*C_ncols +j] = val;
+	    val += A_data[i*n_321 + j*n_32 + k*n_l + l] * B_data[l*n_l + k];
+        }}
+	C_data[i*C_ncols +j] = val;
+    }}
 
-	}
+    py::buffer_info Cbuf = 
+    {
+	C_data.data(),
+	sizeof(double),
+	py::format_descriptor<double>::format(),
+	2,
+	{ C_nrows, C_ncols },
+	{ C_ncols*sizeof(double), sizeof(double) }
+    };
+
+    return py::array_t<double>(Cbuf);
+}
 
 
 
@@ -153,7 +166,7 @@ PYBIND11_PLUGIN(basic_mod)
     m.def("dot_prod", &dot_prod, "Calculates dot product");
     m.def("dot_prod_np", &dot_prod_np, "Calculates dot product");
     m.def("dgemm_numpy", &dgemm_numpy, "Calculates matrix product");
-    m.def("einJ", &einJ, "Computes Einstein summation necessary to construct Coulomb matrix"
+    m.def("einJ", &einJ, "Computes Einstein summation necessary to construct Coulomb matrix");
 //    m.def("einK", &einK, "Computes Einstein summation necessary to construct exchange matrix"
 
 
