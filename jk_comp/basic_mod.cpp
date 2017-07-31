@@ -132,9 +132,10 @@ py::array_t<double> einJ(py::array_t<double> A,
 	for(size_t j=0; j< C_ncols; j++){
 
 	    double val = 0.0;
+
 	    for(size_t k=0; k<n_k; k++){
         for(size_t l=0; l<n_l; l++){
-		    val += A_data[l + k * n_l + j * n_k + i * C_ncols] * B_data[l + k * n_l];
+		    val += A_data[l + k * n_l + j * n_k * n_l + i * C_ncols * n_l * n_k] * B_data[l + k * n_l];
         }
 	    }
 	    C_data[i*C_ncols +j] = val;
