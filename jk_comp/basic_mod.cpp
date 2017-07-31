@@ -100,16 +100,61 @@ py::array_t<double> dgemm_numpy(double alpha,
 }
 
 
+
+py::array_t<double> einJ(py::array_t<double> A,
+                         py::array_t<double> B)
+{
+    py::buffer_info A_info = A.request();
+    py::buffer_info B_info = B.request();
+
+    if(A_info.ndim != 4)
+	throw std::runtime_error("A is not a 4D tensor");
+    if(B_info.ndim != 2)
+	throw std::runtime_error("B is not a 2D tensor");
+
+    if(A_info.shape[2] != B_info.shape[0])
+	throw std::runtime_error("Dimension mismatch A[2] with B[0]");
+
+    if(A_info.shape[3] != B_info.shape[1])
+	throw std::runtime_error("Dimension mismatch A[3] with B[1]");
+
+    size_t C_nrows = A_info.shape[0];
+    size_t C_ncols = A_info.shape[1];
+    size_t n_k = A_info.shape[2]; 
+    size_t n_l = A_info.shape[3]; 
+
+    const double* A_data = static_cast<double *>(A_info.ptr);
+    const double* B_data = static_cast<double *>(B_info.ptr);
+
+    std::vector<double> C_data(C_nrows*C_ncols);
+    
+    for(size_t i=0; i< C_nrows; i++){
+	for(size_t j=0; j< C_ncols; j++){
+
+	    double val = 0.0;
+	    for(size_t k=0; k<n_k; k++){
+        for(size_t l=0; l<n_l; l++){
+		    val += A_data[l + k * n_l + j * n_k + i * C_ncols] * B_data[l + k * n_l];
+        }
+	    }
+	    C_data[i*C_ncols +j] = val;
+
+	}
+
+
+
 //Define interfaces explicitly
 PYBIND11_PLUGIN(basic_mod)
 {
-    py::module m("basic_mod", "Aaron's basic module");
+    py::module m("basic_mod", "QM10 basic module");
     //Fill module here
 
     //module define(python name, c func name, help str)
     m.def("dot_prod", &dot_prod, "Calculates dot product");
     m.def("dot_prod_np", &dot_prod_np, "Calculates dot product");
     m.def("dgemm_numpy", &dgemm_numpy, "Calculates matrix product");
+    m.def("einJ", &einJ, "Computes Einstein summation necessary to construct Coulomb matrix"
+//    m.def("einK", &einK, "Computes Einstein summation necessary to construct exchange matrix"
 
 
     return m.ptr();
